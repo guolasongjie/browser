@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.2#0"; "MSCOMCTL.OCX"
 Begin VB.Form Form1 
    Caption         =   "Internet Browser"
    ClientHeight    =   8070
@@ -11,6 +11,15 @@ Begin VB.Form Form1
    ScaleHeight     =   8070
    ScaleWidth      =   14865
    StartUpPosition =   2  '屏幕中心
+   Begin ibrowser.WBControl WBControl1 
+      Height          =   735
+      Left            =   0
+      TabIndex        =   8
+      Top             =   1200
+      Width           =   3015
+      _ExtentX        =   5318
+      _ExtentY        =   1296
+   End
    Begin MSComctlLib.StatusBar StatusBar1 
       Align           =   2  'Align Bottom
       Height          =   375
@@ -30,15 +39,6 @@ Begin VB.Form Form1
          EndProperty
       EndProperty
    End
-   Begin ibrowser.WBControl WBControl1 
-      Height          =   6420
-      Left            =   0
-      TabIndex        =   5
-      Top             =   1200
-      Width           =   14835
-      _ExtentX        =   26167
-      _ExtentY        =   11324
-   End
    Begin VB.CommandButton Command1 
       Caption         =   "转到"
       Height          =   255
@@ -48,8 +48,8 @@ Begin VB.Form Form1
       Width           =   615
    End
    Begin MSComctlLib.ImageList ImageList1 
-      Left            =   7320
-      Top             =   1560
+      Left            =   6240
+      Top             =   0
       _ExtentX        =   1005
       _ExtentY        =   1005
       BackColor       =   -2147483643
@@ -99,15 +99,15 @@ Begin VB.Form Form1
    End
    Begin MSComctlLib.Toolbar Toolbar1 
       Align           =   1  'Align Top
-      Height          =   930
+      Height          =   960
       Left            =   0
       TabIndex        =   2
       Top             =   0
       Width           =   14865
       _ExtentX        =   26220
-      _ExtentY        =   1640
-      ButtonWidth     =   1217
-      ButtonHeight    =   1482
+      _ExtentY        =   1693
+      ButtonWidth     =   1138
+      ButtonHeight    =   1535
       Appearance      =   1
       ImageList       =   "ImageList1"
       _Version        =   393216
@@ -153,7 +153,7 @@ Begin VB.Form Form1
       Begin VB.ComboBox serchcombox 
          Height          =   300
          Left            =   9180
-         TabIndex        =   8
+         TabIndex        =   5
          Text            =   "选择搜索引擎"
          Top             =   360
          Width           =   1395
@@ -174,7 +174,7 @@ Begin VB.Form Form1
          Width           =   3135
       End
       Begin VB.Timer Timer1 
-         Left            =   6120
+         Left            =   5760
          Top             =   0
       End
    End
@@ -432,7 +432,7 @@ End Sub
  StatusBar1.Panels(1) = "完毕"
  Timer1.Enabled = True
  Combo1.Text = WBControl1.URL
- Me.Caption = WBControl1.LocationName & Title
+ 'Me.Caption = WBControl1.LocationName & Title
  If Dir(App.Path & "\History.htm") <> "" Then
  Open App.Path & "\History.htm" For Input As #1
  Do Until EOF(1)
