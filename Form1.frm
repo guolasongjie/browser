@@ -12,13 +12,13 @@ Begin VB.Form Form1
    ScaleWidth      =   14865
    StartUpPosition =   2  '屏幕中心
    Begin ibrowser.WBControl WBControl1 
-      Height          =   735
+      Height          =   6540
       Left            =   0
       TabIndex        =   8
       Top             =   1200
-      Width           =   3015
-      _ExtentX        =   5318
-      _ExtentY        =   1296
+      Width           =   14895
+      _ExtentX        =   26273
+      _ExtentY        =   11536
    End
    Begin MSComctlLib.StatusBar StatusBar1 
       Align           =   2  'Align Bottom
@@ -268,8 +268,9 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 Public HomeAddress As String
+Private WithEvents CaptionChange As WBControl
+Attribute CaptionChange.VB_VarHelpID = -1
 Dim strURL As String
-
     Private Declare Function LaunchInternetControlPanel Lib "inetcpl.cpl" (ByVal hwndParent As Long) As Long
     Private Declare Function LaunchConnectionDialog Lib "inetcpl.cpl" (ByVal hwndParent As Long) As Long
     Dim Title As String
@@ -311,8 +312,8 @@ End Sub
 
 Private Sub Form_Resize()
     On Error Resume Next
-    WBControl1.Width = Form1.Width - 250
-    WBControl1.Height = Form1.Height - 1500
+    WBControl1.Width = Me.Width - 250
+    WBControl1.Height = Me.Height - 2460
 End Sub
 Private Sub Combo1_KeyPress(KeyAscii As Integer) '使用组合框浏览
 Timer1.Enabled = False
@@ -350,6 +351,7 @@ Private Sub IE_option_Click() '调用IE选项
 End Sub
 
 Private Sub open_Click()
+Debug.Print WBControl1.Title
 strURL = InputBox("http://", "输入地址")
 WBControl1.OpenURL strURL
 End Sub
@@ -389,9 +391,9 @@ WBControl1.Goback
 Case 2
 WBControl1.Goforward
 Case 3
-WBControl1.StopLoading
+'WBControl1.StopLoading
 Case 4
-WBControl1.Refresh
+WBControl1.RefreshPage
 Case 5
 WBControl1.GoHome
 Case 6
@@ -405,15 +407,16 @@ End Sub
 
 Private Sub WBControl1_URLChang(Index As Integer, URL As String)
 Combo1.Text = WBControl1.URL
-Me.Caption = WBControl1.LocationName & Title
+Me.Caption = WBControl1.Title
 End Sub
 Private Sub WBControl1_SelectTab()
+Set CaptionChange = Me.WBControl1
 Combo1.Text = WBControl1.URL
-Me.Caption = WBControl1.LocationName & Title
+Me.Caption = WBControl1.Title
 End Sub
 Private Sub Timer1_Timer()
 Combo1.Text = WBControl1.URL
-Me.Caption = WBControl1.LocationName & Title
+Me.Caption = WBControl1.Title
 Timer1.Enabled = True
 End Sub
  'Private Sub wbcontrol1_NewWindow2(ppDisp As Object, Cancel As Boolean)
@@ -432,7 +435,7 @@ End Sub
  StatusBar1.Panels(1) = "完毕"
  Timer1.Enabled = True
  Combo1.Text = WBControl1.URL
- 'Me.Caption = WBControl1.LocationName & Title
+ Me.Caption = WBControl1.Title
  If Dir(App.Path & "\History.htm") <> "" Then
  Open App.Path & "\History.htm" For Input As #1
  Do Until EOF(1)
@@ -442,8 +445,10 @@ End Sub
  Close #1
  End If
  Open App.Path & "\History.htm" For Output As #1
- Print #1, Text & "<br><a href=" & WBControl1.URL & ">" & "标题："; WBControl1.LocationName; "，时间：" & Date & ","; Time; "</a>"
+ Print #1, Text & "<br><a href=" & WBControl1.URL & ">" & "标题："; WBControl1.Title; "，时间：" & Date & ","; Time; "</a>"
  Close #1
  End Sub
+
  
+
 

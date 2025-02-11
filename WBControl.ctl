@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{EAB22AC0-30C1-11CF-A7EB-0000C05BAE0B}#1.1#0"; "shdocvw.dll"
+Object = "{EAB22AC0-30C1-11CF-A7EB-0000C05BAE0B}#1.1#0"; "ieframe.dll"
 Begin VB.UserControl WBControl 
    BackColor       =   &H00FFFFFF&
    ClientHeight    =   7410
@@ -226,7 +226,6 @@ Private Declare Function FindWindow Lib "user32" Alias "FindWindowA" (ByVal lpCl
 Private Declare Function FindWindowEx Lib "user32" Alias "FindWindowExA" (ByVal hWnd1 As Long, ByVal hWnd2 As Long, ByVal lpsz1 As String, ByVal lpsz2 As String) As Long
 Private Const WM_SETTEXT = &HC
 Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hwnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any) As Long
-
 Dim OldIdx As Integer
 Event SelectTab()
 Event URLChang(Index As Integer, URL As String)
@@ -238,6 +237,8 @@ Event NavigateComplete2(Index As Integer, ByVal pDisp As Object, URL As Variant)
 Event TitleChange(Index As Integer, ByVal Text As String)
 Event PrintPage()
 Event BeforeNavigate2(Index As Integer, URL As Variant)
+' 在用户控件的通用声明部分添加：
+Private m_TabTitles() As String
 
 Public Sub SaveFile()
 WB(OldIdx).ExecWB 4, 1
@@ -281,11 +282,11 @@ Public Sub Getattribute()
 WB(OldIdx).ExecWB 10, 2
 End Sub
 
-Public Sub Cut()
+Public Sub cut()
 WB(OldIdx).ExecWB OLECMDID_CUT, OLECMDEXECOPT_DODEFAULT
 End Sub
 
-Public Sub Copy()
+Public Sub copy()
 WB(OldIdx).ExecWB OLECMDID_COPY, OLECMDEXECOPT_DODEFAULT
 End Sub
 
@@ -294,7 +295,7 @@ WB(OldIdx).ExecWB OLECMDID_PASTE, OLECMDEXECOPT_DODEFAULT
 End Sub
 
 
-Public Sub Find()
+Public Sub find()
 WB(OldIdx).SetFocus
 SendKeys "^f"
 End Sub
@@ -605,6 +606,8 @@ WB(OldIdx).SetFocus
 End Sub
 
 Private Sub UserControl_Initialize()
+ReDim m_TabTitles(0)
+m_TabTitles(0) = "新标签页" ' 默认标题
 OldIdx = 0
 MTab(0).Picture = T0.Picture
 TIcon(0).Picture = Icon1.Picture
@@ -650,6 +653,24 @@ WB(Index).Silent = True
 RaiseEvent BeforeNavigate2(Index, URL)
 End Sub
 
+Private Sub WB_DocumentComplete(Index As Integer, ByVal pDisp As Object, URL As Variant)
+On Error Resume Next
+    ' 强制更新标题
+    If Not WB(Index).Document Is Nothing Then
+        RaiseEvent TitleChange(Index, WB(Index).Document.Title)
+    End If
+        If Index > UBound(m_TabTitles) Then
+        ReDim Preserve m_TabTitles(Index)
+    End If
+    
+    If WB(Index).Document Is Nothing Then
+        m_TabTitles(Index) = "空白页"
+    Else
+        m_TabTitles(Index) = WB(Index).Document.Title
+        If m_TabTitles(Index) = "" Then m_TabTitles(Index) = WB(Index).LocationURL
+    End If
+End Sub
+
 Private Sub WB_DownloadBegin(Index As Integer)
 RaiseEvent DownloadBegin(Index, WB(Index).LocationURL)
 End Sub
@@ -683,6 +704,7 @@ RaiseEvent PropertyChange(Index, szProperty)
 End Sub
 
 Private Sub WB_TitleChange(Index As Integer, ByVal Text As String)
+m_FullTitle = Text
 If Text <> "" Then
 If UCase(WB(Index).LocationURL) = "ABOUT:BLANK" Then
 Tstr(Index).Caption = "空白页"
@@ -708,7 +730,20 @@ PropertyChanged "URL"
 End Property
 
 Public Property Get Title() As String
-Title = WB(OldIdx).LocationName
+On Error Resume Next
+Debug.Print "OldIdx=" & OldIdx & ", Document Is Nothing: " & (WB(OldIdx).Document Is Nothing)
+If WB(OldIdx).Document Is Noting Then
+    Title = "空白页"
+Else
+        Title = WB(OldIdx).Document.Title
+        If Title = "" Then Title = WB(OldIdx).LocationURL ' 回退到 URL
+    End If
+    If OldIdx >= 0 And OldIdx <= UBound(m_TabTitles) Then
+        Title = m_TabTitles(OldIdx)
+    Else
+        Title = "无效索引"
+    End If
+'Title = WB(OldIdx).LocationName
 End Property
 
 Private Sub WB_WindowClosing(Index As Integer, ByVal IsChildWindow As Boolean, Cancel As Boolean)
