@@ -704,7 +704,6 @@ RaiseEvent PropertyChange(Index, szProperty)
 End Sub
 
 Private Sub WB_TitleChange(Index As Integer, ByVal Text As String)
-m_FullTitle = Text
 If Text <> "" Then
 If UCase(WB(Index).LocationURL) = "ABOUT:BLANK" Then
 Tstr(Index).Caption = "¿Õ°×Ò³"

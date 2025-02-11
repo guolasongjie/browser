@@ -351,7 +351,6 @@ Private Sub IE_option_Click() '调用IE选项
 End Sub
 
 Private Sub open_Click()
-Debug.Print WBControl1.Title
 strURL = InputBox("http://", "输入地址")
 WBControl1.OpenURL strURL
 End Sub
@@ -407,16 +406,16 @@ End Sub
 
 Private Sub WBControl1_URLChang(Index As Integer, URL As String)
 Combo1.Text = WBControl1.URL
-Me.Caption = WBControl1.Title
+Me.Caption = WBControl1.Title & Title
 End Sub
 Private Sub WBControl1_SelectTab()
 Set CaptionChange = Me.WBControl1
 Combo1.Text = WBControl1.URL
-Me.Caption = WBControl1.Title
+Me.Caption = WBControl1.Title & Title
 End Sub
 Private Sub Timer1_Timer()
 Combo1.Text = WBControl1.URL
-Me.Caption = WBControl1.Title
+Me.Caption = WBControl1.Title & Title
 Timer1.Enabled = True
 End Sub
  'Private Sub wbcontrol1_NewWindow2(ppDisp As Object, Cancel As Boolean)
@@ -435,7 +434,7 @@ End Sub
  StatusBar1.Panels(1) = "完毕"
  Timer1.Enabled = True
  Combo1.Text = WBControl1.URL
- Me.Caption = WBControl1.Title
+ Me.Caption = WBControl1.Title & Title
  If Dir(App.Path & "\History.htm") <> "" Then
  Open App.Path & "\History.htm" For Input As #1
  Do Until EOF(1)
