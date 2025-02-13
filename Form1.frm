@@ -422,9 +422,7 @@ End Sub
 ' Cancel = True
 ' WBControl1.Navigate strURL
 ' End Sub
- Private Sub WBControl1_StatusTextChange(ByVal Text As String)
- StatusBar1.Panels(1) = WBControl1.Text
- End Sub
+
  Private Sub WBControl1_DownloadBegin(Index As Integer, URL As Variant)
  StatusBar1.Panels(1) = "£¨Ê£ÏÂ1 Ïî£©" & WBControl1.URL
  End Sub
